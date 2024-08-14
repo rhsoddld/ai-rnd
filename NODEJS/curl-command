@@ -1,0 +1,4 @@
+
+curl -X POST http://your-server-address/ssh \
+     -H "Content-Type: application/json" \
+     -d '{"ssh": "ls -al"}'
