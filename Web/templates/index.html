@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat with Ollama</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div id="chat-container">
+        <div id="chat-box">
+            {% for msg in chat_history %}
+                <div class="message {{ msg['role'] }}">{{ msg['role'] }}: {{ msg['content'] }}</div>
+            {% endfor %}
+        </div>
+        <div id="user-input-container">
+            <form id="chat-form" method="post">
+                <input type="text" id="user-input" name="user_input" placeholder="Type your message here..." required>
+                <button type="submit" id="send-button">Send</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const chatForm = document.getElementById('chat-form');
+        const chatBox = document.getElementById('chat-box');
+
+        chatForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const userInput = document.getElementById('user-input');
+            const message = userInput.value;
+
+            fetch('/', {
+                method: 'POST',
+                body: new FormData(chatForm)
+            })
+            .then(response => response.json())
+            .then(data => {
+                // ユーザーのメッセージをチャットボックスに追加
+                const userMessage = document.createElement('div');
+                userMessage.className = 'message user';
+                userMessage.textContent = `user: ${message}`;
+                chatBox.appendChild(userMessage);
+
+                // Ollamaの応答をチャットボックスに追加
+                const assistantMessage = document.createElement('div');
+                assistantMessage.className = 'message assistant';
+                assistantMessage.textContent = `assistant: ${data.response}`;
+                chatBox.appendChild(assistantMessage);
+
+                // チャットボックスをスクロール
+                chatBox.scrollTop = chatBox.scrollHeight;
+
+                // フォームをクリア
+                userInput.value = '';
+            });
+        });
+    </script>
+</body>
+</html>
