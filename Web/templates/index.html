@@ -7,23 +7,81 @@
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-    <div id="chat-container">
-        <div id="chat-box">
-            {% for msg in chat_history %}
-                <div class="message {{ msg['role'] }}">{{ msg['role'] }}: {{ msg['content'] }}</div>
-            {% endfor %}
+    <!-- Top Section: Prompt Selection -->
+    <div id="top-container">
+        <div id="prompt-container">
+            <h4>Role Template</h4>
+            <div id="prompt-selection">
+                <div class="prompt-box" id="develop" onclick="selectPrompt('develop')">開発</div>
+                <div class="prompt-box" id="test" onclick="selectPrompt('test')">テスト</div>
+                <div class="prompt-box" id="deploy" onclick="selectPrompt('deploy')">開通</div>
+                <div class="prompt-box" id="operate" onclick="selectPrompt('operate')">運用</div>
+            </div>
         </div>
-        <div id="user-input-container">
-            <form id="chat-form" method="post">
-                <input type="text" id="user-input" name="user_input" placeholder="Type your message here..." required>
-                <button type="submit" id="send-button">Send</button>
-            </form>
+    
+        <div id="menu-container">
+            <h4>Select Target Server</h4>
+            <select id="server-selection" name="server_selection" onchange="selectServer()">
+                <option value="1.1.1.1">1.1.1.1</option>
+                <option value="2.2.2.2">2.2.2.2</option>
+                <option value="3.3.3.3">3.3.3.3</option>
+                <option value="4.4.4.4">4.4.4.4</option>
+            </select>
+        </div>
+    </div>
+    
+    <input type="hidden" id="selected-prompt" name="selected_prompt">
+
+    <!-- Wrapper for Main Containers -->
+    <div class="container-wrapper">
+        <!-- Main Chat Container -->
+        <div id="main-container">
+            <h4>Chat Box</h4>
+            <div id="content-container">
+                <div id="chat-container">
+                    <div id="chat-box">
+                        {% for msg in chat_history %}
+                            <div class="message {{ msg['role'] }}">{{ msg['role'] }}: {{ msg['content'] }}</div>
+                        {% endfor %}
+                    </div>
+                    <div id="user-input-container">
+                        <form id="chat-form" method="post">
+                            <input type="text" size="70" id="user-input" name="user_input" placeholder="Type your message here..." required>
+                            <input type="hidden" id="selected-prompt" name="selected_prompt" value="">
+                            <input type="hidden" id="selected-server" name="server_selection" value="1.1.1.1">
+                            <button type="submit" id="send-button">Send</button>
+                            <button type="button" id="clear-button">Clear Chat</button>
+                            <button type="button" id="execute-button" style="display:none;">Execute Command</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Command Execution Container -->
+        <div id="main-container2">
+            <div id="execution-container">
+                <h4>Command Prepare</h4>
+                <div id="args-container">
+                    <p id="args-content"></p>
+                </div>
+                <h4>Command Result</h4>
+                <div id="result-container">
+                    <p id="function-response-content"></p>
+                </div>
+            </div>
         </div>
     </div>
 
+    
     <script>
         const chatForm = document.getElementById('chat-form');
         const chatBox = document.getElementById('chat-box');
+        const argsContainer = document.getElementById('args-container');
+        const argsContent = document.getElementById('args-content');
+        const executeButton = document.getElementById('execute-button');
+        const resultContainer = document.getElementById('result-container');
+        const functionResponseContent = document.getElementById('function-response-content');
 
         chatForm.addEventListener('submit', function(event) {
             event.preventDefault();
@@ -37,25 +95,69 @@
             })
             .then(response => response.json())
             .then(data => {
-                // ユーザーのメッセージをチャットボックスに追加
                 const userMessage = document.createElement('div');
                 userMessage.className = 'message user';
                 userMessage.textContent = `user: ${message}`;
                 chatBox.appendChild(userMessage);
 
-                // Ollamaの応答をチャットボックスに追加
                 const assistantMessage = document.createElement('div');
                 assistantMessage.className = 'message assistant';
                 assistantMessage.textContent = `assistant: ${data.response}`;
                 chatBox.appendChild(assistantMessage);
 
-                // チャットボックスをスクロール
-                chatBox.scrollTop = chatBox.scrollHeight;
+                chatForm.reset();
 
-                // フォームをクリア
-                userInput.value = '';
+                if (data.args) {
+                    argsContent.textContent = data.args;
+                    argsContainer.style.display = 'block';
+                    executeButton.style.display = 'inline';
+                } else {
+                    argsContainer.style.display = 'none';
+                    executeButton.style.display = 'none';
+                }
             });
         });
+
+        document.getElementById('execute-button').addEventListener('click', function() {
+            const args = argsContent.textContent;
+            const selectedServer = document.getElementById('server-selection').value;
+
+            fetch('/execute', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ command: args, server_selection: selectedServer })
+            })
+            .then(response => response.json())
+            .then(data => {
+                functionResponseContent.innerHTML = data.function_response.replace(/\n/g, '<br>');
+                resultContainer.style.display = 'block';
+
+                // final_responseをチャットボックスに追加
+                const finalMessage = document.createElement('div');
+                finalMessage.className = 'message assistant';
+                finalMessage.innerHTML = `assistant: ${data.final_response.replace(/\n/g, '<br>')}`;
+                chatBox.appendChild(finalMessage);
+            });
+        });
+
+        document.getElementById('clear-button').addEventListener('click', function() {
+            fetch('/clear_chat', { method: 'POST' })
+            .then(response => response.json())
+            .then(() => {
+                chatBox.innerHTML = '';
+                argsContainer.style.display = 'none';
+                resultContainer.style.display = 'none';
+            });
+        });
+
+        function selectPrompt(prompt) {
+            document.getElementById('selected-prompt').value = prompt;
+        }
+
+        function selectServer() {
+            const serverSelection = document.getElementById('server-selection').value;
+            document.getElementById('selected-server').value = serverSelection;
+        }
     </script>
 </body>
 </html>

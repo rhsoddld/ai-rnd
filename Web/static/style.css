@@ -1,89 +1,242 @@
+/* General Styles */
 body {
-    font-family: 'Helvetica Neue', Arial, sans-serif;
-    background-color: #343541;
+    font-family: Arial, sans-serif;
+    background-color: #2C3A47;
+    color: #ECEFF1;
     margin: 0;
     padding: 0;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
-    height: 100vh;
+    justify-content: flex-start;
+    min-height: 100vh;
 }
 
-#chat-container {
-    width: 100%;
-    max-width: 600px;
-    background-color: #444654;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+h4 {
+    color: #ECEFF1;
+    margin: 0;
+}
+
+/* Top Section: Prompt Selection */
+#top-container {
+    width: 90%; /* 横幅を 90% に設定 */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 1px; 
+    background-color: #3B4A55;
     border-radius: 8px;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    height: 80vh;
+    margin-top: 20px;
 }
 
-#chat-box {
-    padding: 20px;
-    flex: 1;
-    overflow-y: auto;
-    background-color: #343541;
-    border-bottom: 1px solid #565869;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.message {
+#prompt-container {
     padding: 10px;
+    background-color: #3B4A55;
     border-radius: 8px;
-    line-height: 1.5;
-    max-width: 80%;
+    flex: 7;
 }
 
-.user {
-    background-color: #1e90ff;
-    color: white;
-    align-self: flex-end;
+#prompt-container h4 {
+    margin-bottom: 10px;
+    margin-left: 20px;
+    color: #ECEFF1;
 }
 
-.assistant {
-    background-color: #444654;
-    color: white;
-    align-self: flex-start;
-}
-
-#user-input-container {
+#prompt-selection {
     display: flex;
-    padding: 15px;
-    background-color: #565869;
-    border-top: 1px solid #565869;
+    margin-left: 30px;
+    gap: 40px;
 }
 
-#user-input {
-    flex: 1;
-    padding: 10px;
-    border: none;
-    border-radius: 5px;
-    margin-right: 10px;
-    font-size: 16px;
-    background-color: #3c3f4f;
-    color: white;
-}
-
-#user-input::placeholder {
-    color: #a0a1b5;
-}
-
-#send-button {
+.prompt-box {
+    min-width: 150px; /* Set a minimum width */
     padding: 10px 20px;
-    background-color: #1e90ff;
-    border: none;
-    border-radius: 5px;
-    color: white;
+    background-color: #4A6A75;
+    border-radius: 8px;
     cursor: pointer;
-    font-size: 16px;
+    color: #ECEFF1;
     transition: background-color 0.3s ease;
 }
 
-#send-button:hover {
-    background-color: #007bff;
+.prompt-box:hover {
+    background-color: #02a1e5;
+}
+
+.prompt-box.active {
+    background-color: #02a1e5;
+}
+
+/* Menu Container (for horizontal alignment) */
+#menu-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 3;
+}
+
+#menu-container h4 {
+    margin: 0;
+    color: #ECEFF1;
+}
+
+#server-selection {
+    padding: 8px;
+    border-radius: 8px;
+    background-color: #1E272E;
+    color: #ECEFF1;
+    border: none;
+}
+
+/* Wrapper for Main Containers */
+.container-wrapper {
+    width: 90%; /* 横幅を 90% に設定 */
+    display: flex;
+    gap: 20px; /* main-container と main-container2 の間に余白を追加 */
+    margin: 0 auto;
+    height: 100%;
+}
+
+/* Main Container */
+#main-container {
+    background-color: #3B4A55;
+    padding: 20px;
+    border-radius: 8px;
+    flex: 7; /* 横並びでの比率設定 */
+}
+
+#main-container h4 {
+    margin-left: 10px;
+}
+
+#main-container2 {
+    background-color: #3B4A55;
+    padding: 20px;
+    border-radius: 8px;
+    flex: 3; /* 横並びでの比率設定 */
+}
+
+/* Chat and Execution Containers */
+#content-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px; /* chat-container と execution-container の間に余白を追加 */
+}
+
+#chat-container {
+    background-color: #3B4A55;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+#execution-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px; /* Adds spacing between args-container and result-container */
+    height: 70%;
+}
+
+
+#chat-box {
+    background-color: #1E272E;
+    padding: 15px;
+    border-radius: 8px;
+    height: 400px;
+    overflow-y: auto;
+    color: #ECEFF1;
+    display: flex;
+    flex-direction: column;
+}
+
+.message {
+    margin-bottom: 10px;
+    padding: 8px;
+    border-radius: 8px;
+}
+
+.message.user {
+    background-color: #5B8A72;
+    align-self: flex-start;
+}
+
+.message.assistant {
+    background-color: #7C98B3;
+    align-self: flex-end;
+}
+
+/* User Input Section */
+#user-input-container {
+    display: flex;
+    padding: 15px;
+    background-color: #2C3A47;
+    border-top: 1px solid #3B4A55;
+    border-radius: 8px;
+}
+
+#user-input {
+    flex: 3;  /* 伸ばす割合を調整（もともとは1だった） */
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    margin-right: 10px;
+    font-size: 14px;
+    background-color: #1E272E;
+    color: #ECEFF1;
+}
+
+#user-input::placeholder {
+    color: rgba(236, 239, 241, 0.6);
+}
+
+#send-button,
+#clear-button,
+#execute-button {
+    flex: 1; /* ボタンの割合を小さくする */
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    background-color: #4A6A75;
+    color: #ECEFF1;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#send-button:hover,
+#clear-button:hover,
+#execute-button:hover {
+    background-color: #02a1e5;
+}
+
+#execute-button {
+    display: none;
+}
+
+/* Args Container */
+#args-container {
+    background-color: #1E272E;
+    padding: 15px;
+    border-radius: 8px;
+    flex-grow: 3; /* 3:7 ratio with result-container */
+    display: flex;
+    align-items: left;
+    justify-content: left;
+    min-height: 30%; /* Ensures it's visible even if there's no content */
+}
+
+/* Result Container */
+#result-container {
+    background-color: #1E272E;
+    padding: 15px;
+    border-radius: 8px;
+    flex-grow: 7; /* 3:7 ratio with args-container */
+    display: flex;
+    align-items: left;
+    justify-content: left;
+    min-height: 70%; /* Ensures it's visible even if there's no content */
+}
+
+#args-content,
+#function-response-content {
+    margin: 0;
+    color: #ECEFF1;
 }
