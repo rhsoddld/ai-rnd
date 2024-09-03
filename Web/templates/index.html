@@ -36,7 +36,20 @@
     <div class="container-wrapper">
         <!-- Main Chat Container -->
         <div id="main-container">
+
+            <!-- Model Selection -->
+            <h4>Select Model</h4>
+            <div id="model-container">
+                <select id="model-selection" name="model_selection" onchange="selectModel()">
+                    <option value="llama3.1">Llama 3.1</option>
+                    <option value="llama3">Llama 3</option>
+                    <option value="dsasai/llama3-elyza-jp-8b">dsasai/llama3-elyza-jp-8b</option>
+                    <!-- Add more models as needed -->
+                </select>
+            </div>
+
             <h4>Chat Box</h4>
+
             <div id="content-container">
                 <div id="chat-container">
                     <div id="chat-box">
@@ -49,9 +62,10 @@
                             <input type="text" size="70" id="user-input" name="user_input" placeholder="Type your message here..." required>
                             <input type="hidden" id="selected-prompt" name="selected_prompt" value="">
                             <input type="hidden" id="selected-server" name="server_selection" value="1.1.1.1">
+                            <input type="hidden" id="selected-model" name="selected_model" value="llama3.1">
                             <button type="submit" id="send-button">Send</button>
-                            <button type="button" id="clear-button">Clear Chat</button>
-                            <button type="button" id="execute-button" style="display:none;">Execute Command</button>
+                            <button type="button" id="clear-button">Clear</button>
+                            <button type="button" id="execute-button" style="display:none;">Execute</button>
                         </form>
                     </div>
                 </div>
@@ -74,90 +88,6 @@
     </div>
 
     
-    <script>
-        const chatForm = document.getElementById('chat-form');
-        const chatBox = document.getElementById('chat-box');
-        const argsContainer = document.getElementById('args-container');
-        const argsContent = document.getElementById('args-content');
-        const executeButton = document.getElementById('execute-button');
-        const resultContainer = document.getElementById('result-container');
-        const functionResponseContent = document.getElementById('function-response-content');
-
-        chatForm.addEventListener('submit', function(event) {
-            event.preventDefault();
-
-            const userInput = document.getElementById('user-input');
-            const message = userInput.value;
-
-            fetch('/', {
-                method: 'POST',
-                body: new FormData(chatForm)
-            })
-            .then(response => response.json())
-            .then(data => {
-                const userMessage = document.createElement('div');
-                userMessage.className = 'message user';
-                userMessage.textContent = `user: ${message}`;
-                chatBox.appendChild(userMessage);
-
-                const assistantMessage = document.createElement('div');
-                assistantMessage.className = 'message assistant';
-                assistantMessage.textContent = `assistant: ${data.response}`;
-                chatBox.appendChild(assistantMessage);
-
-                chatForm.reset();
-
-                if (data.args) {
-                    argsContent.textContent = data.args;
-                    argsContainer.style.display = 'block';
-                    executeButton.style.display = 'inline';
-                } else {
-                    argsContainer.style.display = 'none';
-                    executeButton.style.display = 'none';
-                }
-            });
-        });
-
-        document.getElementById('execute-button').addEventListener('click', function() {
-            const args = argsContent.textContent;
-            const selectedServer = document.getElementById('server-selection').value;
-
-            fetch('/execute', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ command: args, server_selection: selectedServer })
-            })
-            .then(response => response.json())
-            .then(data => {
-                functionResponseContent.innerHTML = data.function_response.replace(/\n/g, '<br>');
-                resultContainer.style.display = 'block';
-
-                // final_responseをチャットボックスに追加
-                const finalMessage = document.createElement('div');
-                finalMessage.className = 'message assistant';
-                finalMessage.innerHTML = `assistant: ${data.final_response.replace(/\n/g, '<br>')}`;
-                chatBox.appendChild(finalMessage);
-            });
-        });
-
-        document.getElementById('clear-button').addEventListener('click', function() {
-            fetch('/clear_chat', { method: 'POST' })
-            .then(response => response.json())
-            .then(() => {
-                chatBox.innerHTML = '';
-                argsContainer.style.display = 'none';
-                resultContainer.style.display = 'none';
-            });
-        });
-
-        function selectPrompt(prompt) {
-            document.getElementById('selected-prompt').value = prompt;
-        }
-
-        function selectServer() {
-            const serverSelection = document.getElementById('server-selection').value;
-            document.getElementById('selected-server').value = serverSelection;
-        }
-    </script>
+    <script src="/static/script.js"></script>
 </body>
 </html>
