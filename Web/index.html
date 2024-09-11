@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat with Ollama</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <!-- Top Section: Prompt Selection -->
+    <div id="top-container">
+        <div id="prompt-container">
+            <h4>Role Template</h4>
+            <div id="prompt-selection">
+                <div class="prompt-box" id="develop" onclick="selectPrompt('develop')">開発</div>
+                <div class="prompt-box" id="test" onclick="selectPrompt('test')">テスト</div>
+                <div class="prompt-box" id="deploy" onclick="selectPrompt('deploy')">開通</div>
+                <div class="prompt-box" id="operate" onclick="selectPrompt('operate')">運用</div>
+            </div>
+        </div>
+
+        <!-- New Upload Container -->
+        <div id="upload-container">
+            <h4>Upload PDF</h4>
+            <form id="upload-form" enctype="multipart/form-data">
+                <input type="file" id="pdf-file" name="file" accept=".pdf" required>
+                <button type="submit" id="upload-button">Upload</button>
+            </form>
+            <div id="upload-status"></div>
+        </div>
+
+        <div id="menu-container">
+            <h4>Select Target Server</h4>
+            <select id="server-selection" name="server_selection" onchange="selectServer()">
+                <option value="2.2.2.2">2.2.2.2</option>
+                <option value="2.2.2.2">2.2.2.2</option>
+                <option value="3.3.3.3">3.3.3.3</option>
+                <option value="4.4.4.4">4.4.4.4</option>
+            </select>
+        </div>
+    </div>
+    
+    <!-- Wrapper for Main Containers -->
+    <div class="container-wrapper">
+        <!-- Main Chat Container -->
+        <div id="main-container">
+
+            <!-- Model Selection -->
+            <h4>Select Model</h4>
+            <div id="model-container">
+                <select id="model-selection" name="model_selection" onchange="selectModel()">
+                    <option value="llama3.1">Llama 3.1</option>
+                    <option value="mistral">mistral</option>
+                    <!-- Add more models as needed -->
+                </select>
+            </div>
+
+            <h4>Chat Box</h4>
+
+            <div id="content-container">
+                <div id="chat-container">
+                    <div id="chat-box">
+                        {% for msg in chat_history %}
+                            <div class="message {{ msg['role'] }}">{{ msg['role'] }}: {{ msg['content'] | safe}}</div>
+                        {% endfor %}
+                    </div>
+                    <div id="user-input-container">
+                        <form id="chat-form" method="post">
+                            <input type="text" size="70" id="user-input" name="user_input" placeholder="Type your message here..." required>
+                            <input type="hidden" id="selected-prompt" name="selected_prompt" value="">
+                            <input type="hidden" id="selected-server" name="server_selection" value="1.1.1.1">
+                            <input type="hidden" id="selected-model" name="selected_model" value="llama3.1">
+                            <button type="submit" id="send-button">Send</button>
+                            <button type="button" id="clear-button">Clear</button>
+                            <button type="button" id="execute-button" style="display:none;">Execute</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Command Execution Container -->
+        <div id="main-container2">
+            <div id="execution-container">
+                <h4>Command Prepare</h4>
+                <div id="args-container">
+                    <p id="args-content"></p>
+                </div>
+                <h4>Command Result</h4>
+                <div id="result-container">
+                    <p id="function-response-content"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="/static/script.js"></script>
+</body>
+</html>
